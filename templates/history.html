@@ -1,0 +1,37 @@
+{% extends "base_app.html" %}
+{% from "_icons.html" import icon %}
+{% set active = 'history' %}
+{% block title %}History{% endblock %}
+{% block content %}
+<h1 class="page-title">Match history</h1>
+<p class="page-sub">Every analysis you run is saved here. Reopen a report, download it, or build an ATS-optimized resume from it.</p>
+
+{% if entries %}
+<div class="hist-list">
+  {% for e in entries %}
+  {% set pct = ((e['match_percent'] or '0')|replace('%', '')|int) %}
+  <article class="card hist-card">
+    <div class="ring small" data-level="{{ 'good' if pct >= 70 else 'mid' if pct >= 40 else 'low' }}" style="--pct: {{ pct }}"><span>{{ pct }}%</span></div>
+    <div class="hist-main">
+      <div class="file-line">{{ icon('file') }}<span>{{ e['resume_filename'] }}</span></div>
+      <div class="file-line">{{ icon('briefcase') }}<span>{{ e['job_filename'] }}</span></div>
+      <div class="muted small">{{ e['created_at'] }}{% if e['improved_at'] %} &nbsp;<span class="role-pill admin">ATS resume ready</span>{% endif %}</div>
+    </div>
+    <div class="btn-row">
+      <a class="btn inline small" href="{{ url_for('history_detail', history_id=e['history_id']) }}">{{ icon('match') }}<span>Open</span></a>
+      <a class="btn inline small secondary" href="{{ url_for('history_report_pdf', history_id=e['history_id']) }}">{{ icon('download') }}<span>PDF</span></a>
+      <form method="POST" action="{{ url_for('history_delete', history_id=e['history_id']) }}" data-confirm="Delete this analysis from your history?">
+        <button type="submit" class="btn inline small secondary danger"><span>Delete</span></button>
+      </form>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card empty">
+  <h3>No analyses yet</h3>
+  <p class="muted">Run your first match and it will appear here.</p>
+  <a class="btn inline" href="{{ url_for('index') }}">{{ icon('match') }}<span>Match a resume</span></a>
+</div>
+{% endif %}
+{% endblock %}

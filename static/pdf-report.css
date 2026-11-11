@@ -1,0 +1,166 @@
+/* Stylesheet for the downloadable PDF report (resume_match_report.pdf),
+   matching the app's teal / cyan look. Rendered by xhtml2pdf, which has
+   limited CSS support (no flexbox/grid, no gradients), so columns use real
+   <table> elements - see templates/pdf_report.html and
+   _render_two_column_table() in app.py. */
+
+@page {
+  size: A4;
+  margin: 1.6cm 1.8cm 2.2cm 1.8cm;
+  @frame footer {
+    -pdf-frame-content: footerContent;
+    bottom: 0.9cm;
+    margin-left: 1.8cm;
+    margin-right: 1.8cm;
+    height: 0.8cm;
+  }
+}
+
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  color: #0f2422;
+  font-size: 10.5pt;
+  line-height: 1.5;
+}
+
+#footerContent {
+  text-align: center;
+  font-size: 8pt;
+  color: #58706c;
+  border-top: 1px solid #d6e5e2;
+  padding-top: 4px;
+}
+
+/* brand band */
+table.report-header {
+  width: 100%;
+  background-color: #0f766e;
+  border-bottom: 4px solid #f59e0b;
+  margin-bottom: 18px;
+}
+td.rh-brand {
+  color: #ffffff;
+  font-size: 13pt;
+  font-weight: bold;
+  padding: 13px 0 13px 16px;
+}
+td.rh-tag {
+  color: #c4efe8;
+  font-size: 9pt;
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 13px 16px 13px 0;
+}
+
+h1.report-title {
+  color: #0f2422;
+  font-size: 21pt;
+  margin: 0 0 14px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #0f766e;
+}
+
+strong { color: #0b5e57; }
+p { margin: 4px 0 10px 0; }
+
+/* "Match Analysis": label + big percentage */
+h2.match-analysis-label {
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 9.5pt;
+  font-weight: bold;
+  color: #58706c;
+  margin: 6px 0 4px 0;
+}
+p.match-analysis-value {
+  text-align: center;
+  font-size: 34pt;
+  font-weight: bold;
+  color: #0f766e;
+  background-color: #e8f5f2;
+  border: 1px solid #c9e4df;
+  padding: 10px 0 12px 0;
+  margin: 0 0 14px 0;
+}
+p.match-analysis-explanation {
+  color: #0f2422;
+  font-size: 10.5pt;
+  line-height: 1.6;
+  margin: 0 0 18px 0;
+}
+
+/* section headings */
+h2.arrow-heading {
+  color: #0b5e57;
+  font-size: 13pt;
+  border-left: 4px solid #0f766e;
+  background-color: #f0f8f6;
+  padding: 5px 0 5px 10px;
+  margin-top: 22px;
+  margin-bottom: 8px;
+  -pdf-keep-with-next: true;
+}
+
+/* ATS Friendliness score box (value + label share one background so they
+   read as a single box; xhtml2pdf draws borders per block, so none here) */
+.ats-score-box { margin: 4px 0 12px 0; }
+.ats-score-value {
+  text-align: center;
+  font-size: 26pt;
+  font-weight: bold;
+  color: #0f766e;
+  background-color: #e8f5f2;
+  padding: 8px 0 0 0;
+}
+.ats-score-label {
+  text-align: center;
+  font-size: 9pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #58706c;
+  background-color: #e8f5f2;
+  padding: 0 0 10px 0;
+}
+
+h4.keyword-subheading {
+  margin: 14px 0 4px 0;
+  font-size: 9.5pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #58706c;
+  -pdf-keep-with-next: true;
+}
+
+/* two columns side by side; the white borders act as the gap */
+table.keyword-match-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4px 0 14px 0;
+}
+.keyword-match-table td.keyword-col {
+  width: 50%;
+  vertical-align: top;
+  padding: 10px 12px;
+  border: 5px solid #ffffff;
+}
+.keyword-match-table td.keyword-matched { background-color: #e5f6ea; }
+.keyword-match-table td.keyword-missing { background-color: #fdecef; }
+
+.keyword-col h4 {
+  margin: 0 0 4px 0;
+  font-size: 10pt;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.keyword-matched h4, .keyword-matched ul li { color: #15803d; }
+.keyword-missing h4, .keyword-missing ul li { color: #d6334a; }
+.keyword-empty { color: #58706c; font-style: italic; margin: 0; }
+
+ul { margin: 6px 0 12px 0; padding-left: 20px; }
+li { margin-bottom: 5px; }
+hr { border: none; border-top: 1px solid #d6e5e2; margin: 16px 0; }
+.footer-note { margin-top: 24px; font-size: 8.5pt; color: #58706c; }

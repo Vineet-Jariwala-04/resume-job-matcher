@@ -1,0 +1,53 @@
+{% extends "base_auth.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Sign Up{% endblock %}
+{% block card %}
+    <h1>Create your account</h1>
+    <p class="sub">Sign up to match your resume against job descriptions anytime.</p>
+
+      {% if error %}<div class="alert error" role="alert">{{ error }}</div>{% endif %}
+    <form class="auth-form" id="signupForm" method="POST" action="{{ url_for('signup') }}" data-otp="{{ '1' if otp_required else '0' }}" data-verified="{{ '1' if otp_required and email_verified else '0' }}">
+      <div class="seg" role="radiogroup" aria-label="Account type">
+        <label><input type="radio" name="account_type" value="user" {{ 'checked' if (account_type or 'user') == 'user' else '' }}><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg> User</span></label>
+        <label><input type="radio" name="account_type" value="admin" {{ 'checked' if account_type == 'admin' else '' }}><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg> Admin</span></label>
+      </div>
+      <p class="note">Admin accounts need approval from an existing admin before you can log in.</p>
+      <div class="row">
+        <div class="field">
+          <label for="name">Name</label>
+          <div class="input-wrap"><input type="text" id="name" name="name" placeholder="Your full name" value="{{ name or '' }}" autocomplete="name" required></div>
+        </div>
+        <div class="field">
+          <label for="age">Age</label>
+          <div class="input-wrap"><input type="number" id="age" name="age" min="1" max="129" placeholder="Age" value="{{ age or '' }}" required></div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="email">Mail ID</label>
+        <div class="email-row">
+          <div class="input-wrap"><input type="email" id="email" name="email" placeholder="you@example.com" value="{{ email or '' }}" autocomplete="email" required{{ ' readonly' if otp_required and email_verified else '' }}></div>
+          {% if otp_required %}<button type="button" class="otp-btn" id="sendOtpBtn">Send OTP</button>{% endif %}
+        </div>
+        {% if otp_required %}
+        <div class="otp-box" id="otpBox" hidden>
+          <label for="otpCode">Enter the 6-digit code from your email</label>
+          <div class="otp-row">
+            <div class="input-wrap"><input type="text" id="otpCode" class="code-input" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="123456" autocomplete="one-time-code"></div>
+            <button type="button" class="otp-btn" id="verifyOtpBtn">Verify</button>
+          </div>
+        </div>
+        <div class="otp-msg" id="otpMsg" role="status" aria-live="polite"></div>
+        <button type="button" class="linkbtn" id="changeEmailBtn" hidden>Use a different email</button>
+        {% endif %}
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="input-wrap has-btn"><input type="password" id="password" name="password" placeholder="At least 6 characters" minlength="6" autocomplete="new-password" required><button type="button" class="pw-btn" data-target="password" aria-label="Show password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+        <div class="hint" id="pwHint">At least 6 characters</div>
+      </div>
+      <button type="submit" class="btn" id="signupBtn"{{ ' disabled' if otp_required and not email_verified else '' }}>Sign Up</button>
+      {% if otp_required %}<p class="note" id="verifyNote" style="margin:10px 0 0;text-align:center">Verify your email to enable Sign Up. Your account is created only after that.</p>{% endif %}
+    </form>
+    <p class="switch">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+{% endblock %}
+{% block scripts %}{% if otp_required %}<script src="{{ url_for('static', filename='auth/signup.js') }}"></script>{% endif %}{% endblock %}

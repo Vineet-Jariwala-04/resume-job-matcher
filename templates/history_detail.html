@@ -1,0 +1,21 @@
+{% extends "base_app.html" %}
+{% from "_icons.html" import icon %}
+{% set active = 'history' %}
+{% block title %}Analysis{% endblock %}
+{% block content %}
+<p class="muted small"><a href="{{ url_for('history_page') }}">&larr; Back to history</a></p>
+<h1 class="page-title">Analysis from {{ entry['created_at'] }}</h1>
+<p class="page-sub">{{ entry['resume_filename'] }} &nbsp;vs&nbsp; {{ entry['job_filename'] }}</p>
+
+<section class="card results-card">
+  <div class="results-head">
+    <h2>Analysis results</h2>
+    <a class="btn inline" href="{{ url_for('history_report_pdf', history_id=entry['history_id']) }}">{{ icon('download') }}<span>Download report (PDF)</span></a>
+  </div>
+  <div id="results" class="results">{{ analysis_html|safe }}</div>
+</section>
+
+<section class="card improve-card">
+  <div id="improveMount" data-history-id="{{ entry['history_id'] }}"></div>
+</section>
+{% endblock %}

@@ -1,0 +1,14 @@
+flask
+requests
+pymupdf
+markdown
+xhtml2pdf
+beautifulsoup4
+python-docx
+gspread
+google-auth
+
+# image (PNG/JPG) reading + ATS resume export
+Pillow
+rapidocr-onnxruntime
+numpy

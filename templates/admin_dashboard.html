@@ -1,0 +1,99 @@
+{% extends "base_app.html" %}
+{% from "_icons.html" import icon %}
+{% set active = 'admin' %}
+{% block title %}Admin{% endblock %}
+{% block page_class %}wide{% endblock %}
+{% block content %}
+{% set admin_count = users|selectattr("account_type", "equalto", "admin")|list|length %}
+{% set total_matches = users|map(attribute="match_count")|map("int")|sum %}
+<h1 class="page-title">Admin dashboard</h1>
+<p class="page-sub">Everyone who signed up, their latest files and matches.</p>
+
+<div class="stats four">
+  <div class="stat"><span class="stat-ic">{{ icon('users') }}</span><div><div class="stat-v">{{ users|length }}</div><div class="stat-l">Total users</div></div></div>
+  <div class="stat"><span class="stat-ic">{{ icon('shield') }}</span><div><div class="stat-v">{{ admin_count }}</div><div class="stat-l">Admins</div></div></div>
+  <div class="stat"><span class="stat-ic">{{ icon('clock') }}</span><div><div class="stat-v">{{ pending_admins|length }}</div><div class="stat-l">Pending approvals</div></div></div>
+  <div class="stat"><span class="stat-ic">{{ icon('chart') }}</span><div><div class="stat-v">{{ total_matches }}</div><div class="stat-l">Matches run</div></div></div>
+</div>
+
+<h3 class="section-title">Pending admin approvals ({{ pending_admins|length }})</h3>
+{% if pending_admins %}
+  {% for p in pending_admins %}
+  <div class="pending-card">
+    <div><strong>{{ p["name"] }}</strong> <span class="muted">· {{ p["email"] }} · requested {{ p["signup_time"] }}</span></div>
+    <form action="{{ url_for('admin_approve', user_id=p['user_id']) }}" method="POST">
+      <button type="submit" class="btn inline small">{{ icon('check') }}<span>Approve</span></button>
+    </form>
+  </div>
+  {% endfor %}
+{% else %}
+  <p class="muted pending-empty">No pending admin requests right now.</p>
+{% endif %}
+
+<h3 class="section-title">Locked accounts ({{ locked_users|length }})</h3>
+{% if locked_users %}
+  {% for p in locked_users %}
+  <div class="pending-card">
+    <div><strong>{{ p["name"] }}</strong> <span class="muted">· {{ p["email"] }} · {{ p["account_type"] }} · locked {{ p["locked_at"] or "" }} (3 wrong passwords)</span></div>
+    <form action="{{ url_for('admin_unlock', user_id=p['user_id']) }}" method="POST">
+      <button type="submit" class="btn inline small">{{ icon('check') }}<span>Unlock</span></button>
+    </form>
+  </div>
+  {% endfor %}
+{% else %}
+  <p class="muted pending-empty">No locked accounts right now.</p>
+{% endif %}
+
+<div class="table-head">
+  <h3 class="section-title">All users <span class="muted" id="rowCount">({{ users|length }})</span></h3>
+  <div class="search">{{ icon('match') }}<input type="search" id="userSearch" placeholder="Search name, email, file…" aria-label="Search users"></div>
+</div>
+<div class="table-wrap">
+  <table class="db-table" id="userTable">
+    <thead>
+      <tr>
+        <th>ID</th><th>Name</th><th>Role</th><th>Age</th><th>Mail ID</th><th>Logins</th>
+        <th>Signup / last login</th><th>Last logout</th><th>Resume</th><th>Job description</th>
+        <th>Match</th><th>Last matched</th><th>PDF generated</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      {% set pct = (u["latest_match_percent"] or "")|replace("%", "")|int(-1) %}
+      <tr>
+        <td>{{ u["user_id"] }}</td>
+        <td class="nowrap"><strong>{{ u["name"] }}</strong></td>
+        <td><span class="role-pill {{ u['account_type'] }}">{{ u["account_type"] }}{% if u["account_type"] == "admin" and not u["is_approved"] %} · pending{% endif %}{% if u["is_locked"] %} · locked{% endif %}</span></td>
+        <td>{{ u["age"] }}</td>
+        <td>{{ u["email"] }}</td>
+        <td>{{ u["login_count"] }}</td>
+        <td class="nowrap">{{ u["last_login_time"] or u["signup_time"] }}</td>
+        <td class="nowrap">{{ u["last_logout_time"] or "—" }}</td>
+        <td>
+          {% if u["latest_resume_filename"] %}
+          <div class="file-cell">
+            <span class="file-name">{{ u["latest_resume_filename"] }}</span>
+            <span class="file-excerpt">{{ (u["latest_resume_text"] or "")[:120] }}{{ "…" if (u["latest_resume_text"] or "")|length > 120 else "" }}</span>
+            <a href="{{ url_for('admin_download_resume', user_id=u['user_id']) }}">{{ icon('download') }}Download</a>
+          </div>
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {% if u["latest_job_filename"] %}
+          <div class="file-cell">
+            <span class="file-name">{{ u["latest_job_filename"] }}</span>
+            <span class="file-excerpt">{{ (u["latest_job_text"] or "")[:120] }}{{ "…" if (u["latest_job_text"] or "")|length > 120 else "" }}</span>
+            <a href="{{ url_for('admin_download_job', user_id=u['user_id']) }}">{{ icon('download') }}Download</a>
+          </div>
+          {% else %}—{% endif %}
+        </td>
+        <td>{% if pct >= 0 %}<span class="pct-pill" data-level="{{ 'good' if pct >= 70 else ('mid' if pct >= 40 else 'low') }}">{{ pct }}%</span>{% else %}—{% endif %}</td>
+        <td class="nowrap">{{ u["match_updated_at"] or "—" }}</td>
+        <td class="nowrap">{{ u["last_pdf_generated_time"] or "—" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted empty-rows" id="noRows" hidden>No users match your search.</p>
+</div>
+{% endblock %}

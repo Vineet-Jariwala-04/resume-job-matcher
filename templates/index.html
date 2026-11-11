@@ -1,0 +1,50 @@
+{% extends "base_app.html" %}
+{% from "_icons.html" import icon %}
+{% set active = 'match' %}
+{% block title %}Match{% endblock %}
+{% block content %}
+<h1 class="page-title">Match your resume</h1>
+<p class="page-sub">Upload a resume and a job description. We'll score the fit and show what to improve.</p>
+<ol class="steps">
+  <li><span class="n">1</span><div>Upload<small>Resume + job description</small></div></li>
+  <li><span class="n">2</span><div>Analyze<small>Live progress bar</small></div></li>
+  <li><span class="n">3</span><div>Improve<small>Get an ATS-ready resume</small></div></li>
+</ol>
+
+<form id="matchForm" class="card">
+  <div class="dz-grid">
+    <label class="dropzone">
+      <input type="file" id="resume" name="resume" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" required>
+      <span class="dz-icon">{{ icon('file') }}</span>
+      <span class="dz-title">Resume</span>
+      <span class="dz-hint">Drop a file or click to browse<br>PDF, DOCX, TXT, PNG or JPG</span>
+      <span class="dz-file"></span>
+    </label>
+    <label class="dropzone">
+      <input type="file" id="job" name="job" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" required>
+      <span class="dz-icon">{{ icon('briefcase') }}</span>
+      <span class="dz-title">Job description</span>
+      <span class="dz-hint">Drop a file or click to browse<br>PDF, DOCX, TXT, PNG or JPG</span>
+      <span class="dz-file"></span>
+    </label>
+  </div>
+  <div class="form-actions">
+    <button type="submit" id="matchBtn" class="btn inline">{{ icon('match') }}<span>Match resume with job description</span></button>
+  </div>
+</form>
+
+<div id="status" class="alert info" role="status" hidden></div>
+<div id="progressHost" class="card progress-card" hidden></div>
+
+<section id="resultsSection" class="card results-card" hidden>
+  <div class="results-head">
+    <h2>Analysis results</h2>
+    <button id="downloadBtn" class="btn inline" type="button">{{ icon('download') }}<span>Download report (PDF)</span></button>
+  </div>
+  <div id="results" class="results"></div>
+</section>
+
+<section id="improveSection" class="card improve-card" hidden>
+  <div id="improveMount"></div>
+</section>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base_app.html" %}
+{% from "_icons.html" import icon %}
+{% set active = 'admin' %}
+{% block title %}History - {{ target["name"] }}{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ target["name"] }}'s history</h1>
+<p class="page-sub">{{ target["email"] }} &middot; every analysis this account has run.</p>
+{% set history_api = url_for('api_admin_history', user_id=target['user_id']) %}
+{% include "_history.html" %}
+<div class="btn-row"><a class="btn inline secondary" href="{{ url_for('admin_dashboard') }}">{{ icon('database') }}<span>Back to admin</span></a></div>
+{% endblock %}

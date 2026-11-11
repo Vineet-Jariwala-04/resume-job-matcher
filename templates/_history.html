@@ -1,0 +1,22 @@
+{# Score history: line chart + table. Needs `history_api` (JSON URL). Drawn by static/app/app.js #}
+<section class="card history" id="historyCard" data-history-api="{{ history_api }}" data-dl-base="{{ url_for('download_tailored', history_id=0, fmt='docx').rsplit('/', 2)[0] }}">
+  <div class="hist-head">
+    <div>
+      <h3 class="hist-title">Score history</h3>
+      <p class="muted small">Every analysis is saved here, so you can see your scores improve over time.</p>
+    </div>
+    <ul class="legend" aria-label="Chart legend">
+      <li><i class="lg match"></i>Resume match %</li>
+      <li><i class="lg before"></i>ATS readiness (original)</li>
+      <li><i class="lg after"></i>ATS readiness (tailored)</li>
+    </ul>
+  </div>
+  <div class="hist-chart" id="histChart" role="img" aria-label="Line chart of match and ATS scores per analysis"></div>
+  <p class="muted hist-empty" id="histEmpty" hidden>No analyses yet. Run a match and your first point will appear here.</p>
+  <div class="table-wrap hist-table-wrap" id="histTableWrap" hidden>
+    <table class="db-table hist-table">
+      <thead><tr><th>#</th><th>Date</th><th>Resume</th><th>Job description</th><th>Match</th><th>ATS readiness</th><th>Tailored resume</th></tr></thead>
+      <tbody id="histBody"></tbody>
+    </table>
+  </div>
+</section>

@@ -1,0 +1,27 @@
+{% extends "base_auth.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Verify Email{% endblock %}
+{% block card %}
+    <h1>Verify your email</h1>
+    <p class="sub">We sent a 6-digit code to <strong>{{ email }}</strong>. Enter it below to finish creating your account. It works for 10 minutes.</p>
+
+      {% if error %}<div class="alert error" role="alert">{{ error }}</div>{% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+      <div class="alert {{ 'error' if category == 'error' else 'success' }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+    <form class="auth-form" method="POST" action="{{ url_for('signup_verify') }}">
+      <div class="field">
+        <label for="code">Verification code</label>
+        <div class="input-wrap"><input type="text" id="code" name="code" class="code-input" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="123456" autocomplete="one-time-code" autofocus required></div>
+        <div class="hint">Can't find it? Check your Spam folder.</div>
+      </div>
+      <button type="submit" class="btn">Verify &amp; create account</button>
+    </form>
+    <div class="switch">
+      <form class="linkform" method="POST" action="{{ url_for('signup_resend') }}"><button type="submit" class="linkbtn">Resend code</button></form>
+      &nbsp;·&nbsp;
+      <form class="linkform" method="POST" action="{{ url_for('signup_cancel') }}"><button type="submit" class="linkbtn">Use a different email</button></form>
+    </div>
+{% endblock %}

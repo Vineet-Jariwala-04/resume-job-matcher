@@ -1,0 +1,60 @@
+{% extends "base_app.html" %}
+{% from "_icons.html" import icon %}
+{% set active = 'dashboard' %}
+{% block title %}My Dashboard{% endblock %}
+{% block content %}
+<section class="banner">
+  <div>
+    <p class="eyebrow">Welcome back</p>
+    <h1>{{ user["name"].split()[0] }}</h1>
+    <p>Here's your account and your latest resume match.</p>
+  </div>
+  <a class="btn inline" href="{{ url_for('index') }}">{{ icon('match') }}<span>New match</span></a>
+</section>
+
+<section class="card profile">
+  <span class="avatar xl">{{ user["name"][:1]|upper }}</span>
+  <div class="profile-main">
+    <h2>{{ user["name"] }}
+      <span class="role-pill {{ user['account_type'] }}">{{ icon('shield') if user["account_type"] == "admin" }}{{ user["account_type"] }}</span>
+    </h2>
+    <p class="muted">{{ user["email"] }}</p>
+  </div>
+  <dl class="profile-meta">
+    <div><dt>Age</dt><dd>{{ user["age"] }}</dd></div>
+    <div><dt>Member since</dt><dd>{{ user["signup_time"] }}</dd></div>
+  </dl>
+</section>
+
+<div class="stats">
+  <div class="stat"><span class="stat-ic">{{ icon('login') }}</span><div><div class="stat-v">{{ user["login_count"] }}</div><div class="stat-l">Total logins</div></div></div>
+  <div class="stat"><span class="stat-ic">{{ icon('chart') }}</span><div><div class="stat-v">{{ user["match_count"] or 0 }}</div><div class="stat-l">Matches run</div></div></div>
+  <div class="stat"><span class="stat-ic">{{ icon('clock') }}</span><div><div class="stat-v sm">{{ user["match_updated_at"] or "—" }}</div><div class="stat-l">Last matched</div></div></div>
+</div>
+
+<h3 class="section-title">Latest match</h3>
+{% if not user["match_updated_at"] %}
+<section class="card empty">
+  <span class="dz-icon">{{ icon('match') }}</span>
+  <h3>No matches yet</h3>
+  <p class="muted">You haven't matched a resume against a job description yet.</p>
+  <a class="btn inline" href="{{ url_for('index') }}">{{ icon('match') }}<span>Start your first match</span></a>
+</section>
+{% else %}
+{% set pct = (user["latest_match_percent"] or "")|replace("%", "")|int(-1) %}
+<section class="card latest">
+  {% if pct >= 0 %}
+  <div class="ring" style="--pct:{{ pct }}" data-level="{{ 'good' if pct >= 70 else ('mid' if pct >= 40 else 'low') }}"><span>{{ pct }}%</span></div>
+  {% endif %}
+  <div class="latest-main">
+    <div class="file-line">{{ icon('file') }}<span>{{ user["latest_resume_filename"] }}</span></div>
+    <div class="file-line">{{ icon('briefcase') }}<span>{{ user["latest_job_filename"] }}</span></div>
+    <p class="muted small">Last matched {{ user["match_updated_at"] }} · {{ user["match_count"] }} total match{{ "es" if user["match_count"] != 1 else "" }} run</p>
+    <div class="btn-row">
+      <a class="btn inline" href="{{ url_for('report_pdf_previous') }}">{{ icon('download') }}<span>Download previous PDF report</span></a>
+    </div>
+    <p class="muted small">This is the last report you generated. Run a new match for a fresh one.</p>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
